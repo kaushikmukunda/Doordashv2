@@ -1,7 +1,6 @@
 package km.com.doordash
 
 import android.app.Application
-import com.bumptech.glide.GlideBuilder
 import km.com.doordash.common.di.AppComponent
 import km.com.doordash.common.di.DaggerAppComponent
 

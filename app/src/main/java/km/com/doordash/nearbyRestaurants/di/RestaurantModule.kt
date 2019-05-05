@@ -4,7 +4,6 @@ import dagger.Module
 import dagger.Provides
 import km.com.doordash.nearbyRestaurants.api.RestaurantService
 import retrofit2.Retrofit
-import javax.inject.Singleton
 
 @Module
 class RestaurantModule {

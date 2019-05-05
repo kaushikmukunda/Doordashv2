@@ -12,18 +12,19 @@ class RestaurantsViewModel : ViewModel() {
     lateinit var restaurantObservable: Observable<PagedList<Restaurant>>
 
     fun init(dataSourceFactory: DataSourceFactory) {
-        val config = PagedList.Config.Builder()
-            .setPageSize(PAGE_SIZE)
-            .setPrefetchDistance(PREFETCH_DISTANCE)
-            .build()
-
-        restaurantObservable = RxPagedListBuilder<Int, Restaurant>(dataSourceFactory, config).buildObservable()
+        restaurantObservable =
+            RxPagedListBuilder<Int, Restaurant>(dataSourceFactory, PAGELIST_CONFIG).buildObservable()
     }
 
 
     companion object {
         const val PAGE_SIZE = 20
         const val PREFETCH_DISTANCE = 5
+
+        val PAGELIST_CONFIG = PagedList.Config.Builder()
+            .setPageSize(PAGE_SIZE)
+            .setPrefetchDistance(PREFETCH_DISTANCE)
+            .build()
     }
 
 }
