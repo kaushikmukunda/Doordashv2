@@ -8,12 +8,12 @@ import androidx.paging.PagedList
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import io.reactivex.Completable
 import km.com.doordash.MyApplication
 import km.com.doordash.R
 import km.com.doordash.common.api.RestaurantRepository
 import km.com.doordash.common.utils.LoadingState
 import km.com.doordash.nearbyRestaurants.model.Restaurant
-import km.com.doordash.nearbyRestaurants.paging.DataSourceFactory
 import km.com.doordash.nearbyRestaurants.paging.RestaurantAdapter
 import javax.inject.Inject
 
@@ -42,6 +42,10 @@ class RestaurantsActivity : AppCompatActivity() {
 
         viewModel.loadingStateLiveData.observe(this, Observer<LoadingState> {
             adapter.setNetworkState(it)
+        })
+
+        viewModel.retryLiveData.observe(this, Observer<Completable> {
+            adapter.setRetry(it)
         })
     }
 

@@ -4,12 +4,14 @@ import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import io.reactivex.Completable
 import km.com.doordash.common.utils.LoadingState
 import km.com.doordash.nearbyRestaurants.model.Restaurant
 
 class RestaurantAdapter : PagedListAdapter<Restaurant, RecyclerView.ViewHolder>(RESTAURANT_DIFF_CALLBACK) {
 
     private var loadingState: LoadingState? = null
+    private var retry: Completable = Completable.complete()
 
     override fun getItemViewType(position: Int): Int {
         return if (hasExtraRow() && position == (itemCount - 1)) {
@@ -35,7 +37,7 @@ class RestaurantAdapter : PagedListAdapter<Restaurant, RecyclerView.ViewHolder>(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (getItemViewType(position)) {
             VIEW_TYPE_CONTENT -> getItem(position)?.let { (holder as RestaurantRowVH).bind(it) }
-            VIEW_TYPE_PROGRESS -> loadingState?.let { (holder as ProgressVH).bind(it) }
+            VIEW_TYPE_PROGRESS -> loadingState?.let { (holder as ProgressVH).bind(it, retry) }
         }
     }
 
@@ -55,6 +57,10 @@ class RestaurantAdapter : PagedListAdapter<Restaurant, RecyclerView.ViewHolder>(
         } else if (hasExtraRow && previousState != newLoadingState) {
             notifyItemChanged(itemCount - 1)
         }
+    }
+
+    fun setRetry(retry: Completable) {
+        this.retry = retry
     }
 
     private fun hasExtraRow(): Boolean {

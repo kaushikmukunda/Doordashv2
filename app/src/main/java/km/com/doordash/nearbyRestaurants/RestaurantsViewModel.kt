@@ -5,6 +5,7 @@ import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagedList
 import androidx.paging.toLiveData
+import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import km.com.doordash.common.api.RestaurantRepository
 import km.com.doordash.common.utils.LoadingState
@@ -15,12 +16,14 @@ class RestaurantsViewModel : ViewModel() {
 
     lateinit var restaurantLiveData: LiveData<PagedList<Restaurant>>
     lateinit var loadingStateLiveData: LiveData<LoadingState>
+    lateinit var retryLiveData: LiveData<Completable>
     private val disposables = CompositeDisposable()
 
     fun init(restaurantRepository: RestaurantRepository) {
         val dataSourceFactory = DataSourceFactory(restaurantRepository, disposables)
         restaurantLiveData = dataSourceFactory.toLiveData(PAGELIST_CONFIG)
         loadingStateLiveData = Transformations.switchMap(dataSourceFactory.sourceLiveData) { it.loadingState }
+        retryLiveData = Transformations.switchMap(dataSourceFactory.sourceLiveData) { it.retry }
     }
 
     override fun onCleared() {
