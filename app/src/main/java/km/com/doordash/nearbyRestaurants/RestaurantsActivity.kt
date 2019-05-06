@@ -2,13 +2,15 @@ package km.com.doordash.nearbyRestaurants
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.paging.PagedList
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.reactivex.disposables.Disposable
 import km.com.doordash.MyApplication
 import km.com.doordash.R
+import km.com.doordash.nearbyRestaurants.model.Restaurant
 import km.com.doordash.nearbyRestaurants.paging.DataSourceFactory
 import km.com.doordash.nearbyRestaurants.paging.RestaurantAdapter
 import javax.inject.Inject
@@ -21,29 +23,27 @@ class RestaurantsActivity : AppCompatActivity() {
     private lateinit var viewModel: RestaurantsViewModel
     private lateinit var adapter: RestaurantAdapter
 
-    private lateinit var pageListSubscription: Disposable
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_restaurant_list)
         MyApplication.INSTANCE.appComponent.inject(this)
 
-        initView()
+        initView(savedInstanceState)
     }
 
     override fun onResume() {
         super.onResume()
-        pageListSubscription = viewModel.restaurantObservable.subscribe { restaurantPageList ->
-            adapter.submitList(restaurantPageList)
-        }
+        viewModel.restaurantLiveData.observe(this, Observer<PagedList<Restaurant>> {
+            adapter.submitList(it)
+        })
     }
 
     override fun onPause() {
         super.onPause()
-        pageListSubscription.dispose()
+        viewModel.restaurantLiveData.removeObservers(this)
     }
 
-    private fun initView() {
+    private fun initView(savedInstanceState: Bundle?) {
         adapter = RestaurantAdapter()
 
         val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
@@ -52,6 +52,8 @@ class RestaurantsActivity : AppCompatActivity() {
         recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
 
         viewModel = ViewModelProviders.of(this).get(RestaurantsViewModel::class.java)
-        viewModel.init(dataSourceFactory)
+        if (savedInstanceState == null) {
+            viewModel.init(dataSourceFactory)
+        }
     }
 }

@@ -1,21 +1,22 @@
 package km.com.doordash.nearbyRestaurants
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import androidx.paging.RxPagedListBuilder
+import androidx.paging.toLiveData
 import io.reactivex.Observable
 import km.com.doordash.nearbyRestaurants.model.Restaurant
 import km.com.doordash.nearbyRestaurants.paging.DataSourceFactory
 
 class RestaurantsViewModel : ViewModel() {
 
-    lateinit var restaurantObservable: Observable<PagedList<Restaurant>>
+    lateinit var restaurantLiveData: LiveData<PagedList<Restaurant>>
 
     fun init(dataSourceFactory: DataSourceFactory) {
-        restaurantObservable =
-            RxPagedListBuilder<Int, Restaurant>(dataSourceFactory, PAGELIST_CONFIG).buildObservable()
+        restaurantLiveData = dataSourceFactory.toLiveData(PAGELIST_CONFIG)
     }
-
 
     companion object {
         private const val PAGE_SIZE = 20
