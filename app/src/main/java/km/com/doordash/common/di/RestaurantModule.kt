@@ -9,7 +9,7 @@ import retrofit2.Retrofit
 class RestaurantModule {
 
     @Provides
-    fun provideRestuarantService(retrofit: Retrofit): RestaurantService {
+    fun provideRestaurantService(retrofit: Retrofit): RestaurantService {
         return retrofit.create(RestaurantService::class.java)
     }
 }

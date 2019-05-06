@@ -29,8 +29,12 @@ class AppModule {
         return Retrofit.Builder()
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("https://api.doordash.com/v2/")
+            .baseUrl(BASE_URL)
             .client(okHttpClient)
             .build()
+    }
+
+    companion object {
+        private const val BASE_URL = "https://api.doordash.com/v2/"
     }
 }

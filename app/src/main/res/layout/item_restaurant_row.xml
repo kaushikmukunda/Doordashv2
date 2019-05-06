@@ -30,22 +30,14 @@
             android:maxLines="2"
             tools:text="title something very long asdasdsdsd"/>
 
-    <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/barrier"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.7"/>
-
     <TextView
             android:id="@+id/description"
             style="@style/row_description"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/title"
-            app:layout_constraintLeft_toRightOf="@id/thumbnail"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/barrier"
+            app:layout_constraintStart_toEndOf="@id/thumbnail"
+            app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginStart="@dimen/default_margin"
             android:ellipsize="end"
             android:maxLines="1"
@@ -54,15 +46,12 @@
     <TextView
             android:id="@+id/status"
             style="@style/row_status"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/description"
-            app:layout_constraintStart_toEndOf="@id/barrier"
+            app:layout_constraintTop_toBottomOf="@id/description"
             android:paddingTop="@dimen/margin_small"
-            android:layout_marginStart="@dimen/margin_small"
             android:ellipsize="end"
-            android:maxLength="10"
             tools:text="status something very long"
     />
 
