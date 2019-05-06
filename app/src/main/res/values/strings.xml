@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Doordash</string>
+    <string name="retry_msg">Sorry, something went wrong :( Try again later</string>
 </resources>

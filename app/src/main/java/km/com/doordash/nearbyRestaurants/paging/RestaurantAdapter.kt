@@ -1,26 +1,64 @@
 package km.com.doordash.nearbyRestaurants.paging
 
-import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import km.com.doordash.R
+import km.com.doordash.common.utils.LoadingState
 import km.com.doordash.nearbyRestaurants.model.Restaurant
 
-class RestaurantAdapter : PagedListAdapter<Restaurant, RestaurantRowVH>(RESTAURANT_DIFF_CALLBACK) {
+class RestaurantAdapter : PagedListAdapter<Restaurant, RecyclerView.ViewHolder>(RESTAURANT_DIFF_CALLBACK) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RestaurantRowVH {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_restaurant_row, parent, false)
-        return RestaurantRowVH(view)
+    private var loadingState: LoadingState? = null
+
+    override fun getItemViewType(position: Int): Int {
+        return if (hasExtraRow() && position == (itemCount - 1)) {
+            VIEW_TYPE_PROGRESS
+        } else {
+            VIEW_TYPE_CONTENT
+        }
     }
 
-    override fun onBindViewHolder(holder: RestaurantRowVH, position: Int) {
-        getItem(position)?.let { holder.bind(it) }
+    override fun getItemCount(): Int {
+        return super.getItemCount() + if (hasExtraRow()) 1 else 0
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        when (viewType) {
+            VIEW_TYPE_CONTENT -> return RestaurantRowVH.create(parent)
+            VIEW_TYPE_PROGRESS -> return ProgressVH.create(parent)
+
+            else -> throw IllegalArgumentException("Unknown view type : $viewType")
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (getItemViewType(position)) {
+            VIEW_TYPE_CONTENT -> getItem(position)?.let { (holder as RestaurantRowVH).bind(it) }
+            VIEW_TYPE_PROGRESS -> loadingState?.let { (holder as ProgressVH).bind(it) }
+        }
+    }
+
+    fun setNetworkState(newLoadingState: LoadingState) {
+        val previousState = loadingState
+        val hadExtraRow = hasExtraRow()
+
+        loadingState = newLoadingState
+        val hasExtraRow = hasExtraRow()
+
+        if (hadExtraRow != hasExtraRow) {
+            if (hadExtraRow) {
+                notifyItemRemoved(super.getItemCount())
+            } else {
+                notifyItemInserted(super.getItemCount())
+            }
+        } else if (hasExtraRow && previousState != newLoadingState) {
+            notifyItemChanged(itemCount - 1)
+        }
+    }
+
+    private fun hasExtraRow(): Boolean {
+        return loadingState?.let { it != LoadingState.SUCCESS } ?: false
     }
 
     companion object {
@@ -34,23 +72,9 @@ class RestaurantAdapter : PagedListAdapter<Restaurant, RestaurantRowVH>(RESTAURA
             }
 
         }
+
+        private const val VIEW_TYPE_CONTENT = 0
+        private const val VIEW_TYPE_PROGRESS = 1
     }
 }
 
-class RestaurantRowVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-    private val imageView: ImageView = itemView.findViewById(R.id.thumbnail)
-    private val title: TextView = itemView.findViewById(R.id.title)
-    private val description: TextView = itemView.findViewById(R.id.description)
-    private val status: TextView = itemView.findViewById(R.id.status)
-
-    fun bind(restaurant: Restaurant) {
-        Glide.with(imageView)
-            .load(restaurant.coverImgUrl)
-            .into(imageView)
-
-        title.text = restaurant.name
-        description.text = restaurant.getDescription()
-        status.text = restaurant.status
-    }
-}

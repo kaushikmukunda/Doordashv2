@@ -1,21 +1,31 @@
 package km.com.doordash.nearbyRestaurants
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
-import androidx.paging.RxPagedListBuilder
 import androidx.paging.toLiveData
-import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
+import km.com.doordash.common.api.RestaurantRepository
+import km.com.doordash.common.utils.LoadingState
 import km.com.doordash.nearbyRestaurants.model.Restaurant
 import km.com.doordash.nearbyRestaurants.paging.DataSourceFactory
 
 class RestaurantsViewModel : ViewModel() {
 
     lateinit var restaurantLiveData: LiveData<PagedList<Restaurant>>
+    lateinit var loadingStateLiveData: LiveData<LoadingState>
+    private val disposables = CompositeDisposable()
 
-    fun init(dataSourceFactory: DataSourceFactory) {
+    fun init(restaurantRepository: RestaurantRepository) {
+        val dataSourceFactory = DataSourceFactory(restaurantRepository, disposables)
         restaurantLiveData = dataSourceFactory.toLiveData(PAGELIST_CONFIG)
+        loadingStateLiveData = Transformations.switchMap(dataSourceFactory.sourceLiveData) { it.loadingState }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposables.clear()
     }
 
     companion object {

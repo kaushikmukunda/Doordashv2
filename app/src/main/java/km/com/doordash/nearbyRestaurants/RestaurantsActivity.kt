@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import km.com.doordash.MyApplication
 import km.com.doordash.R
+import km.com.doordash.common.api.RestaurantRepository
+import km.com.doordash.common.utils.LoadingState
 import km.com.doordash.nearbyRestaurants.model.Restaurant
 import km.com.doordash.nearbyRestaurants.paging.DataSourceFactory
 import km.com.doordash.nearbyRestaurants.paging.RestaurantAdapter
@@ -18,7 +20,7 @@ import javax.inject.Inject
 class RestaurantsActivity : AppCompatActivity() {
 
     @Inject
-    lateinit var dataSourceFactory: DataSourceFactory
+    lateinit var restaurantRepository: RestaurantRepository
 
     private lateinit var viewModel: RestaurantsViewModel
     private lateinit var adapter: RestaurantAdapter
@@ -33,14 +35,20 @@ class RestaurantsActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+
         viewModel.restaurantLiveData.observe(this, Observer<PagedList<Restaurant>> {
             adapter.submitList(it)
+        })
+
+        viewModel.loadingStateLiveData.observe(this, Observer<LoadingState> {
+            adapter.setNetworkState(it)
         })
     }
 
     override fun onPause() {
         super.onPause()
         viewModel.restaurantLiveData.removeObservers(this)
+        viewModel.loadingStateLiveData.removeObservers(this)
     }
 
     private fun initView(savedInstanceState: Bundle?) {
@@ -53,7 +61,7 @@ class RestaurantsActivity : AppCompatActivity() {
 
         viewModel = ViewModelProviders.of(this).get(RestaurantsViewModel::class.java)
         if (savedInstanceState == null) {
-            viewModel.init(dataSourceFactory)
+            viewModel.init(restaurantRepository)
         }
     }
 }
