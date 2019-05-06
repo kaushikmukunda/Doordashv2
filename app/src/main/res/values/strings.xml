@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Doordash</string>
-    <string name="retry_msg">Sorry, something went wrong :( </string>
+    <string name="retry_msg">Sorry, something went wrong :(</string>
     <string name="retry">Retry</string>
 </resources>
