@@ -1,4 +1,4 @@
-package km.com.doordash.nearbyRestaurants.api
+package km.com.doordash.common.api
 
 import io.reactivex.Observable
 import km.com.doordash.nearbyRestaurants.model.Restaurant

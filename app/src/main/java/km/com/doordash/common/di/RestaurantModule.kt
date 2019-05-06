@@ -1,8 +1,8 @@
-package km.com.doordash.nearbyRestaurants.di
+package km.com.doordash.common.di
 
 import dagger.Module
 import dagger.Provides
-import km.com.doordash.nearbyRestaurants.api.RestaurantService
+import km.com.doordash.common.api.RestaurantService
 import retrofit2.Retrofit
 
 @Module

@@ -18,8 +18,8 @@ class RestaurantsViewModel : ViewModel() {
 
 
     companion object {
-        const val PAGE_SIZE = 20
-        const val PREFETCH_DISTANCE = 5
+        private const val PAGE_SIZE = 20
+        private const val PREFETCH_DISTANCE = 10
 
         val PAGELIST_CONFIG = PagedList.Config.Builder()
             .setPageSize(PAGE_SIZE)

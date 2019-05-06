@@ -3,7 +3,7 @@ package km.com.doordash.nearbyRestaurants.paging
 import android.util.Log
 import androidx.paging.DataSource
 import androidx.paging.PageKeyedDataSource
-import km.com.doordash.nearbyRestaurants.api.RestaurantRepository
+import km.com.doordash.common.api.RestaurantRepository
 import km.com.doordash.nearbyRestaurants.model.Restaurant
 import javax.inject.Inject
 
